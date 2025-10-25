@@ -92,6 +92,22 @@ This script is responsible for preparing the data and training the `RandomForest
 8.  **Model Training**: A `RandomForestRegressor` model is instantiated and trained on the training data (`X_train`, `y_train`).
 9.  **Save Trained Model**: The fully trained model is serialized and saved to a file named `car_price_model.joblib`, making it ready for use in the application.
 
+```mermaid
+graph TD
+    A[Start: Run train_model.py] --> B{Load used_cars.csv};
+    B --> C[Select Features and Target];
+    C --> D[Clean Price and Milage Data];
+    D --> E[Convert Price from USD to INR];
+    E --> F[Drop Rows with Missing Values];
+    F --> G[One-Hot Encode Categorical Features];
+    G --> H[Split Data into Training and Testing Sets];
+    G --> I[Save Model Columns to model_columns.joblib];
+    H --> J[Train RandomForestRegressor Model];
+    J --> K[Evaluate Model Score];
+    K --> L[Save Trained Model to car_price_model.joblib];
+    L --> M[End];
+```
+
 ### 2. Web Application (`app.py`)
 
 This script uses Streamlit to create an interactive web interface that allows users to get predictions from the trained model.
@@ -115,6 +131,33 @@ This script uses Streamlit to create an interactive web interface that allows us
 5.  **Comparison Feature**: The app maintains a "comparison list" in the session state. Users can add their prediction results to this list, which is displayed in a table at the bottom of the page, allowing for side-by-side comparison of multiple cars.
 
 This structured flow ensures that the model is trained correctly and that the user's input is processed in a way that is perfectly compatible with the trained model, leading to accurate and reliable predictions.
+
+```mermaid
+graph TD
+    subgraph "User Interaction"
+        A[Open Web App] --> B{Use Sidebar to Input Car Details};
+        B --> C{Click 'Predict Price' Button};
+    end
+
+    subgraph "Backend Processing"
+        D[Start: Run streamlit run app.py] --> E[Load Model, Columns, and Dataset];
+        E --> A;
+        C --> F[Create DataFrame from Inputs];
+        F --> G[Encode & Align Input Columns];
+        G --> H[model.predict(aligned_input)];
+    end
+
+    subgraph "Display Results"
+        H --> I[Show Predicted Price];
+        I --> J[Display Feature Importance Plot];
+        J --> K[Display Market Price Distribution];
+        K --> L[Display Similar 'Good Deal' Listings];
+        L --> M{Add to Comparison?};
+        M -- Yes --> N[Append to Comparison List Table];
+        M -- No --> O[Ready for New Prediction];
+        N --> O;
+    end
+```
 
 -----
 
